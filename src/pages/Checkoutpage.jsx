@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid, Card, CardContent, CardMedia, useMediaQuery, useTheme } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Grid, 
+  Card, 
+  CardContent, 
+  CardMedia, 
+  useMediaQuery, 
+  useTheme,
+  Container,
+  InputAdornment,
+  IconButton,
+  Chip
+} from '@mui/material';
 import { Colors } from '../styles/theme/theme';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LockIcon from '@mui/icons-material/Lock';
 
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Check for mobile devices
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [userDetails, setUserDetails] = useState({
     name: '',
@@ -16,11 +38,35 @@ const CheckoutPage = () => {
   });
   const [locationDetails, setLocationDetails] = useState('');
   const [pickupDate, setPickupDate] = useState('');
-  const [paymentMethod] = useState('razorpay'); // Only Razorpay as the payment method
+  const [paymentMethod] = useState('razorpay');
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    if (!pickupDate) setPickupDate(today);
+  }, []);
+
   if (!location.state || !location.state.car) {
-    return <Typography variant="h6">No booking details available</Typography>;
+    return (
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        }}
+      >
+        <Card sx={{ p: 4, background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(20px)' }}>
+          <Typography variant="h6" sx={{ color: 'white', textAlign: 'center', mb: 2 }}>
+            No booking details available
+          </Typography>
+          <Button onClick={() => navigate('/')} sx={{ color: 'white', borderColor: 'white' }}>
+            Return Home
+          </Button>
+        </Card>
+      </Box>
+    );
   }
 
   const { car, days, totalPayment } = location.state;
@@ -34,15 +80,20 @@ const CheckoutPage = () => {
     } else if (name === 'pickupDate') {
       setPickupDate(value);
     }
+    
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!userDetails.name) newErrors.name = "Name is required";
-    if (!userDetails.email) newErrors.email = "Email is required";
-    if (!userDetails.phone) newErrors.phone = "Phone is required";
-    if (!locationDetails) newErrors.location = "Location is required";
+    if (!userDetails.name.trim()) newErrors.name = "Name is required";
+    if (!userDetails.email.trim()) newErrors.email = "Email is required";
+    if (!userDetails.phone.trim()) newErrors.phone = "Phone is required";
+    if (!locationDetails.trim()) newErrors.location = "Location is required";
     if (!pickupDate) newErrors.pickupDate = "Pickup date is required";
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -64,131 +115,310 @@ const CheckoutPage = () => {
     }
   };
 
+  const inputSx = {
+    '& .MuiOutlinedInput-root': {
+      background: 'rgba(255, 255, 255, 0.1)',
+      borderRadius: '12px',
+      '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.3)' },
+      '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+      '&.Mui-focused fieldset': { borderColor: '#FFD700' },
+      '&.Mui-focused': {
+        background: 'rgba(255, 255, 255, 0.15)',
+      },
+    },
+    '& .MuiInputLabel-root': { 
+      color: 'rgba(255, 255, 255, 0.8)',
+      '&.Mui-focused': { color: '#FFD700' }
+    },
+    '& .MuiOutlinedInput-input': { 
+      color: 'white',
+      fontWeight: 500,
+      '&::placeholder': { color: 'rgba(255, 255, 255, 0.5)' }
+    },
+    '& .MuiInputAdornment-root .MuiSvgIcon-root': {
+      transition: 'color 0.3s ease',
+    },
+    '& .MuiFormHelperText-root': { color: '#f44336' },
+    mb: 2,
+  };
+
   return (
     <Box
       sx={{
-        padding: isMobile ? '1rem' : '2rem',
-        backgroundColor: Colors.background,
-        marginTop: isMobile ? '5rem' : '3rem',
-        marginBottom: '3rem',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        minHeight: '100vh',
+        py: 4,
       }}
     >
-      <Typography variant="h4" sx={{ textAlign: "center", mb: "2rem", fontWeight: "bold" }}>
-        Enter Details
-      </Typography>
-      <Grid container spacing={isMobile ? 2 : 4}>
-        <Grid item xs={12} md={6}>
-          <Card sx={{ borderRadius: "15px", boxShadow: `0px 4px 10px ${Colors.shadow}`, p: isMobile ? "1rem" : "2rem", background: "linear-gradient(to bottom, #f97316, #fb923c, #fdba74)" }}>
-            <CardContent>
-              <Typography variant="h5" sx={{ mb: "1rem" }}>
-                Car: {car.name}
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+          <IconButton
+            onClick={() => navigate('/booking', { state: { car, days } })}
+            sx={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              mr: 2,
+              '&:hover': { background: 'rgba(255, 255, 255, 0.3)' },
+            }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              color: 'white',
+              fontSize: { xs: '1.5rem', md: '2rem' },
+            }}
+          >
+            Secure Checkout
+          </Typography>
+        </Box>
+
+        <Grid container spacing={4}>
+          {/* Form Section */}
+          <Grid item xs={12} md={7}>
+            <Card
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                p: 4,
+              }}
+            >
+              <Typography variant="h5" sx={{ color: 'white', fontWeight: 600, mb: 3 }}>
+                Booking Details
               </Typography>
-              <Typography variant="body1" sx={{ mb: "1rem" }}>
-                Total Payment: ${totalPayment}
-              </Typography>
-              <Typography variant="h6" sx={{ mb: "1rem" }}>User Details</Typography>
-              <TextField
-                fullWidth
-                required
-                label="Name"
-                name="name"
-                value={userDetails.name}
-                onChange={handleChange}
-                sx={{ mb: "1rem" }}
-                error={!!errors.name}
-                helperText={errors.name}
-              />
-              <TextField
-                fullWidth
-                required
-                label="Email"
-                name="email"
-                type="email"
-                value={userDetails.email}
-                onChange={handleChange}
-                sx={{ mb: "1rem" }}
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-              <TextField
-                fullWidth
-                required
-                label="Phone"
-                name="phone"
-                type="tel"
-                value={userDetails.phone}
-                onChange={handleChange}
-                sx={{ mb: "1rem" }}
-                error={!!errors.phone}
-                helperText={errors.phone}
-              />
-              <Typography variant="h6" sx={{ mb: "1rem" }}>Location and Pickup Date</Typography>
-              <TextField
-                fullWidth
-                required
-                label="Location"
-                name="location"
-                value={locationDetails}
-                onChange={handleChange}
-                sx={{ mb: "1rem" }}
-                error={!!errors.location}
-                helperText={errors.location}
-              />
-              <TextField
-                fullWidth
-                required
-                label="Pickup Date"
-                name="pickupDate"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={pickupDate}
-                onChange={handleChange}
-                sx={{ mb: "1rem" }}
-                error={!!errors.pickupDate}
-                helperText={errors.pickupDate}
-              />
-              <Typography variant="h6" sx={{ mb: "1rem" }}>Payment Method</Typography>
-              <Typography variant="body1" sx={{ mb: "1rem" }}>
-                Razorpay
-              </Typography>
+
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Full Name"
+                    name="name"
+                    value={userDetails.name}
+                    onChange={handleChange}
+                    error={!!errors.name}
+                    helperText={errors.name}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PersonIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={inputSx}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={userDetails.email}
+                    onChange={handleChange}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={inputSx}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Phone"
+                    name="phone"
+                    type="tel"
+                    value={userDetails.phone}
+                    onChange={handleChange}
+                    error={!!errors.phone}
+                    helperText={errors.phone}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PhoneIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={inputSx}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={8}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Pickup Location"
+                    name="location"
+                    value={locationDetails}
+                    onChange={handleChange}
+                    error={!!errors.location}
+                    helperText={errors.location}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LocationOnIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={inputSx}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Pickup Date"
+                    name="pickupDate"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={pickupDate}
+                    onChange={handleChange}
+                    error={!!errors.pickupDate}
+                    helperText={errors.pickupDate}
+                    inputProps={{ min: new Date().toISOString().split('T')[0] }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CalendarTodayIcon sx={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={inputSx}
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Payment Method */}
+              <Box sx={{ mt: 3, mb: 3 }}>
+                <Typography variant="h6" sx={{ color: 'white', mb: 2 }}>
+                  Payment Method
+                </Typography>
+                <Chip
+                  label="Razorpay - Secure Payment Gateway"
+                  sx={{
+                    background: 'linear-gradient(45deg, #1976d2, #2196f3)',
+                    color: 'white',
+                    fontWeight: 600,
+                    py: 2,
+                    px: 1,
+                    height: 'auto',
+                  }}
+                />
+              </Box>
+
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
-                sx={{ display: "block", margin: "auto", mt: "2rem", borderRadius: "20px" }}
-                onClick={handleSubmit}
+                size="large"
+                fullWidth
+                startIcon={<LockIcon />}
+                sx={{
+                  background: 'linear-gradient(45deg, #4CAF50, #45a049)',
+                  borderRadius: '12px',
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #45a049, #4CAF50)',
+                    transform: 'translateY(-2px)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
               >
-                Complete Booking
+                Complete Secure Booking
               </Button>
-            </CardContent>
-          </Card>
+            </Card>
+          </Grid>
+
+          {/* Summary Section */}
+          <Grid item xs={12} md={5}>
+            <Card
+              sx={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '20px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                overflow: 'hidden',
+                position: 'sticky',
+                top: 20,
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={car.image}
+                alt={car.name}
+                sx={{ objectFit: 'cover' }}
+              />
+
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h5" sx={{ color: 'white', fontWeight: 600, mb: 2 }}>
+                  {car.name}
+                </Typography>
+                
+                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 3 }}>
+                  {car.description}
+                </Typography>
+
+                <Box 
+                  sx={{ 
+                    background: 'rgba(255, 215, 0, 0.1)',
+                    borderRadius: '12px',
+                    p: 2,
+                    border: '1px solid rgba(255, 215, 0, 0.3)',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                      Rate per day
+                    </Typography>
+                    <Typography sx={{ color: 'white', fontWeight: 600 }}>
+                      {car.rentPerDay}
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                    <Typography sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                      Duration
+                    </Typography>
+                    <Typography sx={{ color: 'white', fontWeight: 600 }}>
+                      {days} day{days > 1 ? 's' : ''}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 2, borderTop: '1px solid rgba(255, 215, 0, 0.3)' }}>
+                    <Typography variant="h6" sx={{ color: '#FFD700', fontWeight: 700 }}>
+                      Total
+                    </Typography>
+                    <Typography variant="h5" sx={{ color: '#FFD700', fontWeight: 800 }}>
+                      ${totalPayment}
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Card sx={{ borderRadius: "15px", boxShadow: `0px 4px 10px ${Colors.shadow}`, background: "linear-gradient(to bottom, #f97316, #fb923c, #fdba74)" }}>
-            <CardMedia
-              component="img"
-              height={isMobile ? '250' : '400'}
-              image={car.image}
-              alt={car.name}
-              sx={{ objectFit: 'cover', borderRadius: "15px 15px 0 0" }}
-            />
-            <CardContent sx={{ backgroundColor: Colors.primaryLight, borderRadius: "0 0 15px 15px", padding: isMobile ? "0.5rem" : "1rem" }}>
-              <Typography variant="h6" sx={{ mb: "1rem", textAlign: "center", fontWeight: "bold" }}>
-                Booking Summary
-              </Typography>
-              <Typography variant="body1" sx={{ mb: "1rem" }}>
-                Car Model: {car.name}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: "1rem" }}>
-                Total Payment: ${totalPayment}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: "1rem" }}>
-                Rental Duration: {days} day(s)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      </Container>
     </Box>
   );
 };

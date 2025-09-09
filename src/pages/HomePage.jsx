@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
@@ -14,114 +11,99 @@ import {
   Button,
   Box,
   TextField,
+  Container,
+  Chip,
+  IconButton,
 } from "@mui/material";
 import { Colors } from "../styles/theme/theme";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CarRentalIcon from "@mui/icons-material/CarRental";
-import bannerImage from "../assets/logo.png"; // Use a suitable banner image for car rentals
-import { useAuth } from "../hooks/useAuth"; // Import the useAuth hook
+import StarIcon from "@mui/icons-material/Star";
+import SpeedIcon from "@mui/icons-material/Speed";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import bannerImage from "../assets/logo.png";
+import { useAuth } from "../hooks/useAuth";
 
 const HomePage = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
-  const navigate = useNavigate(); // Hook for navigation
-  const { isAuth } = useAuth(); // Use the useAuth hook
+  const navigate = useNavigate();
+  const { isAuth } = useAuth();
   const [selectedCar, setSelectedCar] = useState("");
   const [rentalDays, setRentalDays] = useState(1);
-  const bookingRef = useRef(null); // Ref for booking section
-  const vehicleModelsRef = useRef(null); // Ref for vehicle models section
+  const bookingRef = useRef(null);
+  const vehicleModelsRef = useRef(null);
 
   const carModels = [
-    
     {
       name: "Sedan",
       description: "Comfortable and efficient for city drives.",
       rentPerDay: "$40",
-      image:
-        "https://stimg.cardekho.com/images/car-images/large/Hyundai/Verna/9744/1694602499482/front-left-side-47.jpg",
+      originalPrice: "$50",
+      rating: 4.8,
+      features: ["Fuel Efficient", "Comfortable", "City Drive"],
+      image: "https://stimg.cardekho.com/images/car-images/large/Hyundai/Verna/9744/1694602499482/front-left-side-47.jpg",
+      popular: false,
     },
     {
       name: "SUV",
       description: "Perfect for off-road adventures and more space.",
       rentPerDay: "$60",
-      image:
-        "https://imgd.aeplcdn.com/600x337/n/cw/ec/42355/xuv700-exterior-right-front-three-quarter-3.jpeg?isig=0&q=80",
+      originalPrice: "$75",
+      rating: 4.9,
+      features: ["Spacious", "Off-Road", "Family"],
+      image: "https://imgd.aeplcdn.com/600x337/n/cw/ec/42355/xuv700-exterior-right-front-three-quarter-3.jpeg?isig=0&q=80",
+      popular: true,
     },
     {
       name: "Convertible",
       description: "Enjoy the open air with this stylish option.",
       rentPerDay: "$80",
-      image:
-        "https://imgd.aeplcdn.com/600x337/n/cw/ec/149075/z4-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80",
+      originalPrice: "$95",
+      rating: 4.7,
+      features: ["Stylish", "Open Air", "Premium"],
+      image: "https://imgd.aeplcdn.com/600x337/n/cw/ec/149075/z4-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80",
+      popular: false,
     },
     {
       name: "Luxury",
       description: "Experience the ultimate in comfort and style.",
       rentPerDay: "$120",
-      image:
-        "https://imgd.aeplcdn.com/600x337/n/cw/ec/153319/range-rover-velar-exterior-right-front-three-quarter-4.jpeg?isig=0&q=80",
+      originalPrice: "$150",
+      rating: 5.0,
+      features: ["Luxury", "Premium", "Comfort"],
+      image: "https://imgd.aeplcdn.com/600x337/n/cw/ec/153319/range-rover-velar-exterior-right-front-three-quarter-4.jpeg?isig=0&q=80",
+      popular: true,
     },
-    {
-      name: "Coupe",
-      description: "Sporty and stylish, perfect for a night out.",
-      rentPerDay: "$70",
-      image:
-        "https://www.drivespark.com/car-image/640x480x100/car/10521656-mercedes_amg_glc_43_4matic_coupe.jpg",
-    },
-    {
-      name: "Hatchback",
-      description: "Compact and efficient for urban driving.",
-      rentPerDay: "$50",
-      image:
-        "https://imgd.aeplcdn.com/600x337/n/cw/ec/32597/altroz-exterior-right-front-three-quarter-80.jpeg?isig=0&q=80",
-    },
-    {
-      name: "Minivan",
-      description: "Spacious and perfect for family trips.",
-      rentPerDay: "$90",
-      image:
-        "https://imgd.aeplcdn.com/600x337/n/cw/ec/135523/eeco-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80",
-    },
-    {
-      name: "Pickup Truck",
-      description: "Durable and rugged for tough terrains.",
-      rentPerDay: "$100",
-      image:
-        "https://imgd.aeplcdn.com/600x337/n/cw/ec/109265/hilux-exterior-right-front-three-quarter-2.jpeg?isig=0&q=80",
-    },
-    // New car model
-    {
-      name: "Electric",
-      description: "Eco-friendly and efficient for modern driving.",
-      rentPerDay: "$110",
-      image:
-        "https://media.zigcdn.com/media/model/2023/Sep/tata-nexon-ev_360x240.jpg",
-    },
-    
-    
     {
       name: "Sports Car",
       description: "High-performance and stylish, perfect for speed enthusiasts.",
       rentPerDay: "$150",
-      image:
-        "https://cdni.autocarindia.com/utils/imageresizer.ashx?n=https://cms.haymarketindia.net/model/uploads/modelimages/Lamborghini-Revuelto-010220241506.jpg",
+      originalPrice: "$200",
+      rating: 4.9,
+      features: ["High Performance", "Speed", "Luxury"],
+      image: "https://cdni.autocarindia.com/utils/imageresizer.ashx?n=https://cms.haymarketindia.net/model/uploads/modelimages/Lamborghini-Revuelto-010220241506.jpg",
+      popular: true,
     },
     {
-      name: "Bike",
-      description: "Fast and nimble, perfect for quick rides and city commutes.",
-      rentPerDay: "$30",
-      image:
-        "https://stat.overdrive.in/wp-content/odgallery/2022/08/63812_2022_Honda_CB300F_DLX_PRO_1_468x263.jpg",
-    },
-    {
-      name: "Classic",
-      description: "Vintage car for a nostalgic driving experience.",
-      rentPerDay: "$130",
-      image:
-        "https://imgd.aeplcdn.com/1280x720/cw/ec/32392/Aston-Martin-DB11-Exterior-115405.jpg?wm=0",
+      name: "Electric",
+      description: "Eco-friendly and efficient for modern driving.",
+      rentPerDay: "$110",
+      originalPrice: "$130",
+      rating: 4.8,
+      features: ["Eco-Friendly", "Silent", "Modern"],
+      image: "https://media.zigcdn.com/media/model/2023/Sep/tata-nexon-ev_360x240.jpg",
+      popular: false,
     },
   ];
 
+  const features = [
+    { icon: <SpeedIcon />, title: "Fast Delivery" },
+    { icon: <CheckCircleIcon />, title: "Eco Friendly" },
+    { icon: <CheckCircleIcon />, title: "100% Safe" },
+    { icon: <ThumbUpIcon />, title: "Top Rated" },
+  ];
 
   const handleBookNowClick = () => {
     if (bookingRef.current) {
@@ -150,293 +132,447 @@ const HomePage = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #e2e8f0, #f1f5f9, #f8fafc)",
-        padding: "2rem",
-        marginBottom: "3rem",
-        [theme.breakpoints.down("sm")]: {
-          padding: "1rem",
-          marginTop: "6rem"
-        },
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        minHeight: "100vh",
       }}
     >
-      {/* Hero Section */}
-      <Grid container spacing={4} sx={{ mb: "2rem" }}>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            [theme.breakpoints.down("sm")]: {
-              textAlign: "center",
-            },
-          }}
-        >
-          <Box
-            sx={{
-              borderRadius: "15px",
-              padding: "2rem",
-              color: Colors.black,
-              boxShadow: `0px 4px 10px ${Colors.shadow}`,
-              maxWidth: "500px",
-              [theme.breakpoints.down("sm")]: {
-                maxWidth: "100%",
-                padding: "1rem",
-              },
-            }}
-          >
-            <Typography
-              variant="h2"
-              sx={{
-                fontWeight: "bold",
-                mb: "1rem",
-                fontFamily: "'Roboto', sans-serif",
-                fontSize: matches ? "1.5rem" : "2.5rem",
-              }}
-            >
-              Welcome to Quick Car Rent
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                mb: "2rem",
-                fontFamily: "'Open Sans', sans-serif",
-                fontSize: matches ? "1rem" : "1.5rem",
-              }}
-            >
-              Rent Your Dream Car with Us!
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                mb: "2rem",
-                fontFamily: "'Open Sans', sans-serif",
-                fontSize: matches ? "0.875rem" : "1.125rem",
-              }}
-            >
-              Choose from our wide range of vehicles and enjoy a smooth ride!
-            </Typography>
+      <Container maxWidth="xl" sx={{ pt: 4, pb: 8 }}>
+        {/* Hero Section */}
+        <Grid container spacing={4} sx={{ mb: 8, alignItems: "center" }}>
+          <Grid item xs={12} md={6}>
             <Box
               sx={{
-                display: "flex",
-                flexDirection: matches ? "column" : "row",
-                alignItems: "center",
-                gap: "1rem",
+                background: "rgba(255, 255, 255, 0.1)",
+                backdropFilter: "blur(20px)",
+                borderRadius: "20px",
+                padding: { xs: "2rem", md: "3rem" },
+                border: "1px solid rgba(255, 255, 255, 0.2)",
               }}
             >
-              <Button
-                variant="contained"
-                endIcon={<ArrowForwardIcon />}
+              <Typography
+                variant="h1"
                 sx={{
-                  backgroundColor: Colors.primary,
-                  "&:hover": { backgroundColor: Colors.secondaryLight },
+                  fontWeight: 800,
+                  mb: 2,
+                  fontSize: { xs: "2.5rem", md: "3.5rem" },
+                  color: "white",
+                  lineHeight: 1.2,
                 }}
-                onClick={handleVehicleClick}
               >
-                Vehicle Models
-              </Button>
-              <Button
-                variant="contained"
-                endIcon={<ArrowForwardIcon />}
+                Drive Your
+                <br />
+                <span style={{ color: "#FFD700" }}>Dream Car</span>
+              </Typography>
+              
+              <Typography
+                variant="h6"
                 sx={{
-                  backgroundColor: Colors.primary,
-                  "&:hover": { backgroundColor: Colors.secondaryLight },
+                  mb: 4,
+                  color: "rgba(255, 255, 255, 0.9)",
+                  fontSize: { xs: "1.1rem", md: "1.3rem" },
+                  fontWeight: 300,
                 }}
-                onClick={handleBookNowClick}
               >
-                Book Now
-              </Button>
-            </Box>
-          </Box>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box
-            component="img"
-            sx={{
-              borderRadius: "15px",
-              boxShadow: `0px 4px 10px ${Colors.shadow}`,
-              width: "100%",
-              maxWidth: "700px",
-              height: "auto",
-              [theme.breakpoints.down("sm")]: {
-                width: "90%",
-              },
-            }}
-            src={bannerImage}
-            alt="Car Rental Banner"
-            loading="lazy"
-          />
-        </Grid>
-      </Grid>
+                Premium car rental service with the finest selection of vehicles
+                for every occasion and adventure.
+              </Typography>
 
-      {/* Car Models Section */}
-      <Typography
-        ref={vehicleModelsRef}
-        variant="h4"
-        sx={{
-          textAlign: "center",
-          color: Colors.primary,
-          mb: "2rem",
-          fontWeight: "bold",
-          fontFamily: "'Roboto', sans-serif",
-          fontSize: matches ? "1.5rem" : "2rem",
-        }}
-      >
-        Our Car Models
-      </Typography>
-      <Grid container spacing={4}>
-        {carModels.map((model, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card
-              sx={{
-                background: "linear-gradient(to bottom, #f97316, #fb923c, #b45309, #f97316)",
-                borderRadius: "15px",
-                boxShadow: `0px 4px 10px ${Colors.shadow}`,
-                overflow: "hidden",
-                position: "relative",
-                "&:hover": {
-                  transform: "scale(1.03)",
-                  transition: "transform 0.3s",
-                },
-              }}
-            >
-              <CardMedia
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 4 }}>
+                {features.map((feature, index) => (
+                  <Chip
+                    key={index}
+                    icon={feature.icon}
+                    label={feature.title}
+                    sx={{
+                      background: "rgba(255, 255, 255, 0.2)",
+                      color: "white",
+                      border: "1px solid rgba(255, 255, 255, 0.3)",
+                    }}
+                  />
+                ))}
+              </Box>
+
+              <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={handleVehicleClick}
+                  sx={{
+                    background: "linear-gradient(45deg, #FF6B6B, #FF8E53)",
+                    borderRadius: "50px",
+                    px: 4,
+                    py: 1.5,
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    "&:hover": {
+                      background: "linear-gradient(45deg, #FF8E53, #FF6B6B)",
+                    },
+                  }}
+                >
+                  Explore Fleet
+                </Button>
+                
+                <Button
+                  variant="outlined"
+                  size="large"
+                  endIcon={<ArrowForwardIcon />}
+                  onClick={handleBookNowClick}
+                  sx={{
+                    borderRadius: "50px",
+                    px: 4,
+                    py: 1.5,
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    color: "white",
+                    "&:hover": {
+                      borderColor: "white",
+                      background: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
+                >
+                  Quick Book
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Box sx={{ position: "relative" }}>
+              <Box
                 component="img"
-                height="200"
-                image={model.image}
-                alt={model.name}
-                loading="lazy"
+                src={bannerImage}
+                alt="Luxury Car"
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: "20px",
+                  boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)",
+                }}
               />
-              <CardContent sx={{ padding: "1rem" }}>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    fontWeight: "bold",
-                    mb: "0.5rem",
-                    fontFamily: "'Roboto', sans-serif",
-                    fontSize: matches ? "1rem" : "1.25rem",
-                  }}
-                >
-                  {model.name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ fontFamily: "'Open Sans', sans-serif", fontSize: matches ? "0.875rem" : "1rem" }}
-                >
-                  {model.description}
-                </Typography>
-                <Typography
-                  variant="h6"
-                  color="text.primary"
-                  sx={{
-                    mt: "0.5rem",
-                    fontWeight: "bold",
-                    fontFamily: "'Roboto', sans-serif",
-                    fontSize: matches ? "1rem" : "1.25rem",
-                  }}
-                >
-                  Rent Per Day: {model.rentPerDay}
-                </Typography>
-              </CardContent>
               <Box
                 sx={{
                   position: "absolute",
-                  top: "1rem",
-                  right: "1rem",
+                  top: -10,
+                  right: -10,
+                  width: 80,
+                  height: 80,
+                  background: "linear-gradient(45deg, #FFD700, #FFA500)",
+                  borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: Colors.primary,
-                  color: Colors.white,
-                  borderRadius: "50%",
-                  width: "40px",
-                  height: "40px",
                 }}
               >
-                <CarRentalIcon />
+                <Typography variant="h6" sx={{ color: "white", fontWeight: "bold" }}>
+                  #1
+                </Typography>
               </Box>
-            </Card>
+            </Box>
           </Grid>
-        ))}
-      </Grid>
+        </Grid>
 
-      {/* Booking Section */}
-      <Typography
-        ref={bookingRef}
-        variant="h4"
-        sx={{
-          textAlign: "center",
-          color: Colors.primary,
-          mt: "2rem",
-          mb: "2rem",
-          fontWeight: "bold",
-          fontFamily: "'Roboto', sans-serif",
-          fontSize: matches ? "1.5rem" : "2rem",
-        }}
-      >
-        Book Your Car
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: "2rem",
-          boxShadow: `0px 4px 10px ${Colors.shadow}`,
-          background: "linear-gradient(to bottom,  #fb923c, #fdba74, #fed7aa)",
-          borderRadius: "15px",
-          maxWidth: "600px",
-          margin: "0 auto",
-        }}
-      >
-        <TextField
-          select
-          label="Select Car"
-          fullWidth
-          value={selectedCar}
-          onChange={(e) => setSelectedCar(e.target.value)}
-          sx={{ mb: "1rem" }}
-          SelectProps={{ native: true }}
-        >
-          <option value=""></option>
-          {carModels.map((model) => (
-            <option key={model.name} value={model.name}>
-              {model.name}
-            </option>
-          ))}
-        </TextField>
-        <TextField
-          type="number"
-          label="Number of Days"
-          value={rentalDays}
-          onChange={(e) => setRentalDays(e.target.value)}
-          fullWidth
-          sx={{ mb: "1rem" }}
-        />
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: Colors.primary,
-            "&:hover": { backgroundColor: Colors.secondaryLight },
-          }}
-          onClick={handleConfirmBookingClick}
-        >
-          Confirm Booking
-        </Button>
-      </Box>
+        {/* Vehicle Models Section */}
+        <Box ref={vehicleModelsRef} sx={{ mb: 8 }}>
+          <Box sx={{ textAlign: "center", mb: 6 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 800,
+                mb: 2,
+                fontSize: { xs: "2rem", md: "3rem" },
+                color: "white",
+              }}
+            >
+              Premium Fleet
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{ color: "rgba(255, 255, 255, 0.8)", maxWidth: 600, mx: "auto" }}
+            >
+              Choose from our carefully curated collection of premium vehicles
+            </Typography>
+          </Box>
+
+          <Grid container spacing={3}>
+            {carModels.map((model, index) => (
+              <Grid item xs={12} sm={6} lg={4} key={index}>
+                <Card
+                  sx={{
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(20px)",
+                    borderRadius: "20px",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    overflow: "hidden",
+                    position: "relative",
+                    cursor: "pointer",
+                    transition: "transform 0.2s ease",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                    },
+                  }}
+                >
+                  {model.popular && (
+                    <Chip
+                      label="Popular"
+                      sx={{
+                        position: "absolute",
+                        top: 12,
+                        left: 12,
+                        zIndex: 2,
+                        background: "linear-gradient(45deg, #FF6B6B, #FF8E53)",
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "0.7rem",
+                      }}
+                    />
+                  )}
+
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={model.image}
+                    alt={model.name}
+                  />
+
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 12,
+                      right: 12,
+                      background: "rgba(0, 0, 0, 0.7)",
+                      borderRadius: "12px",
+                      px: 1.5,
+                      py: 0.5,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                    }}
+                  >
+                    <StarIcon sx={{ color: "#FFD700", fontSize: "0.9rem" }} />
+                    <Typography variant="body2" sx={{ color: "white", fontWeight: "bold", fontSize: "0.8rem" }}>
+                      {model.rating}
+                    </Typography>
+                  </Box>
+
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 700,
+                        mb: 1,
+                        color: "white",
+                        fontSize: "1.2rem",
+                      }}
+                    >
+                      {model.name}
+                    </Typography>
+                    
+                    <Typography
+                      variant="body2"
+                      sx={{ 
+                        color: "rgba(255, 255, 255, 0.8)", 
+                        mb: 2,
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      {model.description}
+                    </Typography>
+
+                    <Box sx={{ display: "flex", gap: 0.5, mb: 2, flexWrap: "wrap" }}>
+                      {model.features.slice(0, 3).map((feature, idx) => (
+                        <Chip
+                          key={idx}
+                          label={feature}
+                          size="small"
+                          sx={{
+                            background: "rgba(255, 255, 255, 0.2)",
+                            color: "white",
+                            fontSize: "0.65rem",
+                            height: "24px",
+                          }}
+                        />
+                      ))}
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <Box>
+                        <Typography
+                          variant="h4"
+                          sx={{
+                            fontWeight: 800,
+                            color: "#FFD700",
+                            fontSize: "1.4rem",
+                          }}
+                        >
+                          {model.rentPerDay}
+                          <Typography
+                            component="span"
+                            sx={{ 
+                              fontSize: "0.7rem", 
+                              color: "rgba(255, 255, 255, 0.6)",
+                              ml: 0.5,
+                            }}
+                          >
+                            /day
+                          </Typography>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "rgba(255, 255, 255, 0.5)",
+                            textDecoration: "line-through",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          {model.originalPrice}
+                        </Typography>
+                      </Box>
+                      
+                      <IconButton
+                        size="small"
+                        sx={{
+                          background: "linear-gradient(45deg, #FF6B6B, #FF8E53)",
+                          color: "white",
+                          "&:hover": {
+                            background: "linear-gradient(45deg, #FF8E53, #FF6B6B)",
+                          },
+                        }}
+                      >
+                        <CarRentalIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Booking Section */}
+        <Box ref={bookingRef}>
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 800,
+                mb: 2,
+                fontSize: { xs: "2rem", md: "2.5rem" },
+                color: "white",
+              }}
+            >
+              Quick Booking
+            </Typography>
+          </Box>
+
+          <Card
+            sx={{
+              maxWidth: 500,
+              mx: "auto",
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(20px)",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              p: 3,
+            }}
+          >
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+              <TextField
+                select
+                label="Select Your Dream Car"
+                fullWidth
+                value={selectedCar}
+                onChange={(e) => setSelectedCar(e.target.value)}
+                SelectProps={{ native: true }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    background: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "12px",
+                    "& fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
+                    "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.5)" },
+                    "&.Mui-focused fieldset": { borderColor: "#FFD700" },
+                  },
+                  "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.8)" },
+                  "& .MuiOutlinedInput-input": { color: "white" },
+                }}
+              >
+                <option value="" style={{ background: "#1a1a1a", color: "white" }}>
+                  
+                </option>
+                {carModels.map((model) => (
+                  <option key={model.name} value={model.name} style={{ background: "#1a1a1a", color: "white" }}>
+                    {model.name} - {model.rentPerDay}/day
+                  </option>
+                ))}
+              </TextField>
+
+              <TextField
+                type="number"
+                label="Rental Duration (Days)"
+                value={rentalDays}
+                onChange={(e) => setRentalDays(e.target.value)}
+                fullWidth
+                InputProps={{ inputProps: { min: 1 } }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    background: "rgba(255, 255, 255, 0.1)",
+                    borderRadius: "12px",
+                    "& fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
+                    "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.5)" },
+                    "&.Mui-focused fieldset": { borderColor: "#FFD700" },
+                  },
+                  "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.8)" },
+                  "& .MuiOutlinedInput-input": { color: "white" },
+                }}
+              />
+
+              {selectedCar && (
+                <Box
+                  sx={{
+                    background: "rgba(255, 215, 0, 0.1)",
+                    borderRadius: "12px",
+                    p: 2,
+                    border: "1px solid rgba(255, 215, 0, 0.3)",
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: "#FFD700", fontWeight: "bold" }}>
+                    Total: {carModels.find(car => car.name === selectedCar)?.rentPerDay.replace('$', '') * rentalDays 
+                    ? `$${carModels.find(car => car.name === selectedCar)?.rentPerDay.replace('$', '') * rentalDays}` 
+                    : "Select a car"}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.8)" }}>
+                    {rentalDays} days rental
+                  </Typography>
+                </Box>
+              )}
+
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={handleConfirmBookingClick}
+                disabled={!selectedCar}
+                sx={{
+                  background: selectedCar 
+                    ? "linear-gradient(45deg, #FFD700, #FFA500)"
+                    : "rgba(255, 255, 255, 0.2)",
+                  color: selectedCar ? "#1a1a1a" : "rgba(255, 255, 255, 0.5)",
+                  borderRadius: "12px",
+                  py: 1.5,
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  "&:hover": {
+                    background: selectedCar ? "linear-gradient(45deg, #FFA500, #FFD700)" : "rgba(255, 255, 255, 0.2)",
+                  },
+                }}
+              >
+                {selectedCar ? "Confirm Booking" : "Select a Car First"}
+              </Button>
+            </Box>
+          </Card>
+        </Box>
+      </Container>
     </Box>
   );
 };
